@@ -25,7 +25,7 @@ const createDoctor = async (payload: ICreateDoctorPayload) => {
             }
       });
 
-      if (!userExist) {
+      if (userExist) {
             throw new Error("User with this email already exists.")
       };
 
