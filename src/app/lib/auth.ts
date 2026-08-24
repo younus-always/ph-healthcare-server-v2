@@ -36,11 +36,13 @@ export const auth = betterAuth({
                   },
                   deletedAt: {
                         type: "date",
-                        required: true,
+                        required: false,
                         defaultValue: null
                   }
             }
-      }
+      },
+
+      // trustedOrigins: [process.env.BETTER_AUTH_URL as string],
       // socialProviders: {
       //       github: {
       //             clientId: process.env.GOOGLE_CLIENT_ID as string,
