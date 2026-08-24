@@ -1,5 +1,5 @@
 {
-  "name": "PH-Healthcare-Server",
+  "name": "ph-healthcare-server-v2",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -19,7 +19,6 @@
       "onFail": "download"
     }
   },
-  "type": "module",
   "dependencies": {
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
