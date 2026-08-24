@@ -1,6 +1,9 @@
 import express, { Application, Request, Response, urlencoded } from "express";
 import cors from "cors";
 import { IndexRoutes } from "./app/routes";
+import { globalErrorHandler } from "./app/middleware/globalErrorHandler";
+import status from "http-status";
+import { notFound } from "./app/middleware/notFound";
 
 const app: Application = express();
 
@@ -12,13 +15,16 @@ app.use("/api/v1", IndexRoutes);
 
 
 app.get("/", (req: Request, res: Response) => {
-      res.status(200).json({
+      res.status(status.OK).json({
             success: true,
-            statusCode: 200,
+            statusCode: status.OK,
             message: "PH Healthcare Server",
             date: new Date().toLocaleDateString()
       })
 });
 
+
+app.use(globalErrorHandler);
+app.use(notFound);
 
 export default app;
