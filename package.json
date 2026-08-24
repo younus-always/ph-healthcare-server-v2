@@ -8,8 +8,8 @@
     "start": "node dist/server.js",
     "build": "tsc",
     "lint": "eslint ./src/**/*",
-    "prisma:migrate": "pnpm dlx prisma migrate dev",
-    "prisma:generate": "pnpm dlx prisma generate"
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:generate": "prisma generate"
   },
   "keywords": [],
   "author": "",
