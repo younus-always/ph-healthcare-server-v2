@@ -15,7 +15,7 @@ app.get("/", (req: Request, res: Response) => {
             success: true,
             statusCode: 200,
             message: "PH Healthcare Server",
-            date: Date.now()
+            date: new Date().toLocaleDateString()
       })
 });
 
