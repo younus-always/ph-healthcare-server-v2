@@ -2,13 +2,14 @@ import { Request, Response } from "express";
 import { SpecialtyService } from "./specialty.service";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
+import status from "http-status";
 
 const createSpecialty = catchAsync(async (req: Request, res: Response) => {
       const result = await SpecialtyService.createSpecialty(req.body);
 
       sendResponse(res, {
             success: true,
-            statusCode: 201,
+            statusCode: status.CREATED,
             message: "Specialty created successfully",
             data: result
       });
@@ -19,7 +20,7 @@ const getAllSpecialties = catchAsync(async (req: Request, res: Response) => {
 
       sendResponse(res, {
             success: true,
-            statusCode: 200,
+            statusCode: status.OK,
             message: "Specialties fetched successfully",
             data: result
       });
@@ -31,7 +32,7 @@ const deleteSpecialty = catchAsync(async (req: Request, res: Response) => {
 
       sendResponse(res, {
             success: true,
-            statusCode: 200,
+            statusCode: status.OK,
             message: "Specialty deleted successfully",
             data: result
       });
@@ -43,7 +44,7 @@ const updateSpecialty = catchAsync(async (req: Request, res: Response) => {
 
       sendResponse(res, {
             success: true,
-            statusCode: 200,
+            statusCode: status.OK,
             message: "Specialty updated successfully",
             data: result
       })
