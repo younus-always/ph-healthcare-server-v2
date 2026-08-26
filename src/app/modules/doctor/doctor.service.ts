@@ -1,3 +1,5 @@
+import status from "http-status";
+import AppError from "../../errorHelpers/AppError";
 import { prisma } from "../../lib/prisma"
 
 const getAllDoctors = async () => {
@@ -15,14 +17,14 @@ const getAllDoctors = async () => {
 };
 
 const getDoctorById = async (id: string) => {
-       const isDoctorExist = await prisma.doctor.findUnique({
+      const isDoctorExist = await prisma.doctor.findUnique({
             where: { id }
       });
 
       if (!isDoctorExist) {
-            throw new Error("Doctor not found!")
+            throw new AppError(status.NOT_FOUND, "Doctor not found!")
       };
-      
+
       const doctor = await prisma.doctor.findUnique({
             where: { id }
       });
@@ -35,7 +37,7 @@ const deleteDoctor = async (id: string) => {
       });
 
       if (!isDoctorExist) {
-            throw new Error("Doctor not found!")
+            throw new AppError(status.NOT_FOUND, "Doctor not found!")
       };
 
       const doctor = await prisma.doctor.delete({
