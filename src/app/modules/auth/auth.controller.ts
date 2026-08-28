@@ -4,6 +4,8 @@ import { sendResponse } from "../../utils/sendResponse";
 import { AuthService } from "./auth.service";
 import status from "http-status";
 import { tokenUtils } from "../../utils/token";
+import AppError from "../../errorHelpers/AppError";
+import { cookieUtils } from "../../utils/cookie";
 
 const registerPatient = catchAsync(async (req: Request, res: Response) => {
       const result = await AuthService.registerPatient(req.body);
@@ -59,9 +61,119 @@ const getMe = catchAsync(async (req: Request, res: Response) => {
       });
 });
 
+const getNewToken = catchAsync(async (req: Request, res: Response) => {
+      const refreshToken = req.cookies.refreshToken;
+      const betterAuthSessionToken = req.cookies["better-auth.session_token"];
+      if (!refreshToken) {
+            throw new AppError(status.UNAUTHORIZED, "Refresh token is missing");
+      }
+      const result = await AuthService.getNewToken(refreshToken, betterAuthSessionToken);
+
+      const { accessToken, refreshToken: newRefreshToken, sessionToken } = result;
+
+      tokenUtils.setAccessTokenCookie(res, accessToken);
+      tokenUtils.setRefreshTokenCookie(res, newRefreshToken);
+      tokenUtils.setBetterAuthSessionCookie(res, sessionToken);
+
+      sendResponse(res, {
+            success: true,
+            statusCode: status.OK,
+            message: "New tokens generated successfully",
+            data: {
+                  accessToken,
+                  refreshToken: newRefreshToken,
+                  sessionToken,
+            },
+      });
+});
+
+const changePassword = catchAsync(async (req: Request, res: Response) => {
+      const betterAuthSessionToken = req.cookies["better-auth.session_token"];
+      const result = await AuthService.changePassword(req.body, betterAuthSessionToken);
+
+      const { accessToken, refreshToken, token } = result;
+
+      tokenUtils.setAccessTokenCookie(res, accessToken);
+      tokenUtils.setRefreshTokenCookie(res, refreshToken);
+      tokenUtils.setBetterAuthSessionCookie(res, token as string);
+
+      sendResponse(res, {
+            success: true,
+            statusCode: status.OK,
+            message: "Password changed successfully",
+            data: result
+      });
+});
+
+const logoutUser = catchAsync(async (req: Request, res: Response) => {
+      const betterAuthSessionToken = req.cookies["better-auth.session_token"];
+      const result = await AuthService.logoutUser(betterAuthSessionToken);
+
+      cookieUtils.clearCookie(res, 'accessToken', {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+      });
+      cookieUtils.clearCookie(res, 'refreshToken', {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+      });
+      cookieUtils.clearCookie(res, 'better-auth.session_token', {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+      });
+
+      sendResponse(res, {
+            success: true,
+            statusCode: status.OK,
+            message: "User logged out successfully",
+            data: result,
+      });
+});
+
+const verifyEmail = catchAsync(async (req: Request, res: Response) => {
+      const { email, otp } = req.body;
+      await AuthService.verifyEmail(email, otp);
+
+      sendResponse(res, {
+            success: true,
+            statusCode: status.OK,
+            message: "Email verified successfully",
+      });
+});
+
+const forgetPassword = catchAsync(async (req: Request, res: Response) => {
+      const { email } = req.body;
+      await AuthService.forgetPassword(email);
+
+      sendResponse(res, {
+            success: true,
+            statusCode: status.OK,
+            message: "Password reset OTP sent to email successfully",
+      });
+});
+
+const resetPassword = catchAsync(async (req: Request, res: Response) => {
+      const { email, otp, newPassword } = req.body;
+      await AuthService.resetPassword(email, otp, newPassword);
+
+      sendResponse(res, {
+            success: true,
+            statusCode: status.OK,
+            message: "Password reset successfully",
+      });
+});
 
 export const AuthController = {
       registerPatient,
       loginUser,
-      getMe
+      getMe,
+      getNewToken,
+      changePassword,
+      logoutUser,
+      verifyEmail,
+      forgetPassword,
+      resetPassword,
 };
