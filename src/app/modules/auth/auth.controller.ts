@@ -5,6 +5,7 @@ import { AuthService } from "./auth.service";
 import status from "http-status";
 import { tokenUtils } from "../../utils/token";
 import AppError from "../../errorHelpers/AppError";
+import { cookieUtils } from "../../utils/cookie";
 
 const registerPatient = catchAsync(async (req: Request, res: Response) => {
       const result = await AuthService.registerPatient(req.body);
@@ -86,10 +87,58 @@ const getNewToken = catchAsync(async (req: Request, res: Response) => {
       });
 });
 
+const changePassword = catchAsync(async (req: Request, res: Response) => {
+      const betterAuthSessionToken = req.cookies["better-auth.session_token"];
+      const result = await AuthService.changePassword(req.body, betterAuthSessionToken);
+
+      const { accessToken, refreshToken, token } = result;
+
+      tokenUtils.setAccessTokenCookie(res, accessToken);
+      tokenUtils.setRefreshTokenCookie(res, refreshToken);
+      tokenUtils.setBetterAuthSessionCookie(res, token as string);
+
+      sendResponse(res, {
+            success: true,
+            statusCode: status.OK,
+            message: "Password changed successfully",
+            data: result
+      });
+});
+
+const logoutUser = catchAsync(async (req: Request, res: Response) => {
+      const betterAuthSessionToken = req.cookies["better-auth.session_token"];
+      const result = await AuthService.logoutUser(betterAuthSessionToken);
+
+      cookieUtils.clearCookie(res, 'accessToken', {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+      });
+      cookieUtils.clearCookie(res, 'refreshToken', {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+      });
+      cookieUtils.clearCookie(res, 'better-auth.session_token', {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+      });
+
+      sendResponse(res, {
+            success: true,
+            statusCode: status.OK,
+            message: "User logged out successfully",
+            data: result,
+      });
+});
+
 
 export const AuthController = {
       registerPatient,
       loginUser,
       getMe,
       getNewToken,
+      changePassword,
+      logoutUser,
 };
