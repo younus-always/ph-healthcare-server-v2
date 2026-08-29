@@ -5,7 +5,11 @@ import { sendResponse } from "../../utils/sendResponse";
 import status from "http-status";
 
 const createSpecialty = catchAsync(async (req: Request, res: Response) => {
-      const result = await SpecialtyService.createSpecialty(req.body);
+      const payload = {
+            ...req.body,
+            icon: req.file?.path
+      };
+      const result = await SpecialtyService.createSpecialty(payload);
 
       sendResponse(res, {
             success: true,
@@ -38,23 +42,9 @@ const deleteSpecialty = catchAsync(async (req: Request, res: Response) => {
       });
 });
 
-const updateSpecialty = catchAsync(async (req: Request, res: Response) => {
-      const id = req.params.id as string;
-      const result = await SpecialtyService.updateSpecialty(id, req.body);
-
-      sendResponse(res, {
-            success: true,
-            statusCode: status.OK,
-            message: "Specialty updated successfully",
-            data: result
-      })
-
-});
-
 
 export const SpecialtyController = {
       createSpecialty,
       getAllSpecialties,
       deleteSpecialty,
-      updateSpecialty,
 }
