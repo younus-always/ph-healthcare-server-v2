@@ -3,17 +3,42 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./prisma";
 import { Role, UserStatus } from "../../generated/prisma/enums";
 import { envVars } from "../config/env";
-import ms, { StringValue } from "ms";
 import { bearer, emailOTP } from "better-auth/plugins";
 import { sendEmail } from "../utils/email";
 
 
 export const auth = betterAuth({
+      baseURL: envVars.BETTER_AUTH_URL,
+      secret: envVars.BETTER_AUTH_SECRET,
       database: prismaAdapter(prisma, {
             provider: "postgresql", // or "mysql", "sqlite", ...etc
       }),
+
       emailAndPassword: {
             enabled: true,
+      },
+
+      socialProviders: {
+            google: {
+                  clientId: envVars.GOOGLE_CLIENT_ID,
+                  clientSecret: envVars.GOOGLE_CLIENT_SECRET,
+                  mapProfileToUser: () => {
+                        return {
+                              role: Role.PATIENT,
+                              status: UserStatus.ACTIVE,
+                              needPasswordChange: false,
+                              emailVerified: true,
+                              isDeleted: false,
+                              deleteAt: null,
+                        }
+                  }
+            }
+      },
+
+      emailVerification: {
+            sendOnSignUp: true,
+            sendOnSignIn: true,
+            autoSignInAfterVerification: true,
       },
 
       user: {
@@ -101,11 +126,30 @@ export const auth = betterAuth({
             }
       },
 
-      // trustedOrigins: [process.env.BETTER_AUTH_URL as string],
-      // socialProviders: {
-      //       github: {
-      //             clientId: process.env.GOOGLE_CLIENT_ID as string,
-      //             clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-      //       },
-      // },
+      redirectURLs: {
+            signIn: `${envVars.BETTER_AUTH_URL}/api/v1/auth/google/success`,
+      },
+
+      trustedOrigins: [envVars.BETTER_AUTH_URL || envVars.FRONTEND_URL],
+
+      advanced: {
+            cookies: {
+                  state: {
+                        attributes: {
+                              httpOnly: true,
+                              secure: true,
+                              sameSite: "none",
+                              path: "/"
+                        }
+                  },
+                  sessionToken: {
+                        attributes: {
+                              httpOnly: true,
+                              secure: true,
+                              sameSite: "none",
+                              path: "/"
+                        }
+                  }
+            }
+      }
 });
