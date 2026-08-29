@@ -5,9 +5,12 @@ import { globalErrorHandler } from "./app/middleware/globalErrorHandler";
 import status from "http-status";
 import { notFound } from "./app/middleware/notFound";
 import cookieParser from "cookie-parser";
+import { toNodeHandler } from "better-auth/node";
+import { auth } from "./app/lib/auth";
 
 const app: Application = express();
 
+app.use("/api/auth", toNodeHandler(auth))
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors());
