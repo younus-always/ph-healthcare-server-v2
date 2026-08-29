@@ -13,7 +13,7 @@ export const auth = betterAuth({
       database: prismaAdapter(prisma, {
             provider: "postgresql", // or "mysql", "sqlite", ...etc
       }),
-      
+
       emailAndPassword: {
             enabled: true,
       },
@@ -126,9 +126,9 @@ export const auth = betterAuth({
             }
       },
 
-      // redirectURLs: {
-      //       signIn: "",
-      // },
+      redirectURLs: {
+            signIn: `${envVars.BETTER_AUTH_URL}/api/v1/auth/google/success`,
+      },
 
       // trustedOrigins: [process.env.BETTER_AUTH_URL as string],
 
