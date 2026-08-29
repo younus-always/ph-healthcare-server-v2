@@ -191,6 +191,9 @@ export class QueryBuilder<
                         };
                   };
 
+                  if (!isAllowedField) {
+                        return;
+                  };
                   // Range filter parsing
                   if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
                         queryWhere[key] = this.parseRangeFilter(value as Record<string, string | number>);

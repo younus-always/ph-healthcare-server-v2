@@ -41,6 +41,7 @@
     "multer-storage-cloudinary": "^4.0.0",
     "nodemailer": "^9.0.5",
     "pg": "^8.23.0",
+    "qs": "^6.15.3",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -53,6 +54,7 @@
     "@types/node": "^26.2.0",
     "@types/nodemailer": "^8.0.1",
     "@types/pg": "^8.23.1",
+    "@types/qs": "^6.15.1",
     "eslint": "^10.9.0",
     "prisma": "^7.9.1",
     "tsx": "^4.23.12",
