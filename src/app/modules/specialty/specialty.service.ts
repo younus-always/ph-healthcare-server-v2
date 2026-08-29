@@ -20,18 +20,9 @@ const deleteSpecialty = async (id: string): Promise<Specialty> => {
       return result;
 };
 
-const updateSpecialty = async (id: string, payload: Partial<Specialty>): Promise<Specialty> => {
-      const result = await prisma.specialty.update({
-            where: { id },
-            data: payload
-      });
-      return result;
-};
-
 
 export const SpecialtyService = {
       createSpecialty,
       getAllSpecialties,
       deleteSpecialty,
-      updateSpecialty,
 }
