@@ -3,6 +3,7 @@ import { catchAsync } from "../../utils/catchAsync";
 import { ScheduleService } from "./schedule.service";
 import { sendResponse } from "../../utils/sendResponse";
 import status from "http-status";
+import { IQueryParams } from "../../interfaces/query.interface";
 
 
 const createSchedule = catchAsync(async (req: Request, res: Response) => {
@@ -17,18 +18,21 @@ const createSchedule = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllSchedules = catchAsync(async (req: Request, res: Response) => {
-      const result = await ScheduleService.getAllSchedules();
+      const query = req.query;
+      const result = await ScheduleService.getAllSchedules(query as IQueryParams);
 
       sendResponse(res, {
             success: true,
             statusCode: status.OK,
             message: 'Schedules retrieved successfully',
-            data: result
+            data: result.data,
+            meta: result.meta
       });
 });
 
 const getScheduleById = catchAsync(async (req: Request, res: Response) => {
-      const result = await ScheduleService.getScheduleById();
+      const id = req.params.id as string;
+      const result = await ScheduleService.getScheduleById(id);
 
       sendResponse(res, {
             success: true,
@@ -39,7 +43,9 @@ const getScheduleById = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateSchedule = catchAsync(async (req: Request, res: Response) => {
-      const result = await ScheduleService.updateSchedule();
+      const id = req.params.id as string;
+      const payload = req.body;
+      const result = await ScheduleService.updateSchedule(id, payload);
 
       sendResponse(res, {
             success: true,
@@ -50,13 +56,13 @@ const updateSchedule = catchAsync(async (req: Request, res: Response) => {
 });
 
 const deleteSchedule = catchAsync(async (req: Request, res: Response) => {
-      const result = await ScheduleService.deleteSchedule();
+      const id = req.params.id as string;
+      await ScheduleService.deleteSchedule(id);
 
       sendResponse(res, {
             success: true,
             statusCode: status.OK,
             message: 'Schedule deleted successfully',
-            data: result
       });
 });
 

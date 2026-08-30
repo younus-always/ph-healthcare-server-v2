@@ -3,10 +3,13 @@ import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import status from "http-status";
 import { DoctorScheduleService } from "./doctorSchedule.service";
+import { IQueryParams } from "../../interfaces/query.interface";
 
 
 const createMyDoctorSchedule = catchAsync(async (req: Request, res: Response) => {
-      const doctorSchedule = await DoctorScheduleService.createMyDoctorSchedule();
+      const user = req.user;
+      const payload = req.body;
+      const doctorSchedule = await DoctorScheduleService.createMyDoctorSchedule(user, payload);
 
       sendResponse(res, {
             success: true,
@@ -17,7 +20,9 @@ const createMyDoctorSchedule = catchAsync(async (req: Request, res: Response) =>
 });
 
 const getMyDoctorSchedules = catchAsync(async (req: Request, res: Response) => {
-      const result = await DoctorScheduleService.getMyDoctorSchedules();
+      const user = req.user;
+      const query = req.query as IQueryParams;
+      const result = await DoctorScheduleService.getMyDoctorSchedules(user, query);
 
       sendResponse(res, {
             success: true,
