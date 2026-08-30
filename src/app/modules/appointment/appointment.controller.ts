@@ -17,7 +17,8 @@ const bookAppointment = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getMyAppointments = catchAsync(async (req: Request, res: Response) => {
-      const appointments = await AppointmentService.getMyAppointments();
+      const user = req.user;
+      const appointments = await AppointmentService.getMyAppointments(user);
 
       sendResponse(res, {
             success: true,
@@ -28,7 +29,11 @@ const getMyAppointments = catchAsync(async (req: Request, res: Response) => {
 });
 
 const changeAppointmentStatus = catchAsync(async (req: Request, res: Response) => {
-      const updatedAppointment = await AppointmentService.changeAppointmentStatus();
+      const appointmentId = req.params.appointmentId as string;
+      const payload = req.body;
+      const user = req.user;
+
+      const updatedAppointment = await AppointmentService.changeAppointmentStatus(appointmentId, payload, user);
 
       sendResponse(res, {
             success: true,
@@ -39,7 +44,9 @@ const changeAppointmentStatus = catchAsync(async (req: Request, res: Response) =
 });
 
 const getMySingleAppointment = catchAsync(async (req: Request, res: Response) => {
-      const appointment = await AppointmentService.getMySingleAppointment();
+      const user = req.user;
+      const id = req.params.id as string;
+      const appointment = await AppointmentService.getMySingleAppointment(id, user);
 
       sendResponse(res, {
             success: true,
