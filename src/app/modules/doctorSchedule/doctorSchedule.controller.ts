@@ -28,23 +28,28 @@ const getMyDoctorSchedules = catchAsync(async (req: Request, res: Response) => {
             success: true,
             statusCode: status.OK,
             message: 'Doctor schedules retrieved successfully',
-            data: result
+            meta: result.meta,
+            data: result.data
       });
 });
 
 const getAllDoctorSchedules = catchAsync(async (req: Request, res: Response) => {
-      const result = await DoctorScheduleService.getAllDoctorSchedules();
+      const query = req.query as IQueryParams;
+      const result = await DoctorScheduleService.getAllDoctorSchedules(query);
 
       sendResponse(res, {
             success: true,
             statusCode: status.OK,
             message: 'All doctor schedules retrieved successfully',
-            data: result
+            meta: result.meta,
+            data: result.data
       });
 });
 
 const getDoctorScheduleById = catchAsync(async (req: Request, res: Response) => {
-      const doctorSchedule = await DoctorScheduleService.getDoctorScheduleById();
+      const doctorId = req.params.doctorId as string;
+      const scheduleId = req.params.scheduleId as string;
+      const doctorSchedule = await DoctorScheduleService.getDoctorScheduleById(doctorId, scheduleId);
 
       sendResponse(res, {
             success: true,
@@ -55,7 +60,8 @@ const getDoctorScheduleById = catchAsync(async (req: Request, res: Response) => 
 });
 
 const updateMyDoctorSchedule = catchAsync(async (req: Request, res: Response) => {
-      const updatedDoctorSchedule = await DoctorScheduleService.updateMyDoctorSchedule();
+      const user = req.user;
+      const updatedDoctorSchedule = await DoctorScheduleService.updateMyDoctorSchedule(user, req.body);
 
       sendResponse(res, {
             success: true,
@@ -66,7 +72,9 @@ const updateMyDoctorSchedule = catchAsync(async (req: Request, res: Response) =>
 });
 
 const deleteMyDoctorSchedule = catchAsync(async (req: Request, res: Response) => {
-      await DoctorScheduleService.deleteMyDoctorSchedule();
+      const id = req.params.id as string;
+      const user = req.user;
+      await DoctorScheduleService.deleteMyDoctorSchedule(id, user);
 
       sendResponse(res, {
             success: true,
